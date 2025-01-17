@@ -113,7 +113,7 @@ function win_resizer.setup(opts)
     end, {
         nargs = '*',
         complete = function(_, cmd_line, _)
-            local args = vim.split(cmd_line, '%s*', { trimempty = true })
+            local args = vim.split(cmd_line, ' ', { trimempty = true })
             local arg_num = #args - 2
             if arg_num == 1 then
                 return { '0' }
