@@ -65,6 +65,7 @@ means there is no window on the right), it tries to make the left border of the 
 Or you may not like these smart resizing, you can use the simple ones:
 
 ```lua
+local resize = require('win.resizer').resize
 local delta = 3
 local map_set = vim.keymap.set
 map_set({ 'n' }, '<up>', function()
