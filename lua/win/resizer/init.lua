@@ -124,7 +124,7 @@ end
 --- @param delta? number default 1
 --- @param respect_ignore_firetypes? boolean default true
 --- @return boolean
-function win_resizer:resize(win, border, delta, respect_ignore_firetypes)
+function win_resizer.resize(win, border, delta, respect_ignore_firetypes)
     respect_ignore_firetypes = respect_ignore_firetypes == nil or respect_ignore_firetypes
     win = win == 0 and vim.api.nvim_get_current_win() or win
     local neighbor = get_nearest_neighbor(win, border, respect_ignore_firetypes)
