@@ -1,0 +1,4 @@
+--- @alias win.resizer.Border string | 'top' | 'bottom' | 'left' | 'right'
+---
+--- @class win.resizer.Config
+--- @field ignore_filetypes string[]|function():string[]
