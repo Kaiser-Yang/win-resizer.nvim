@@ -1,5 +1,3 @@
---- @module 'win.resizer'
-
 local win_resizer = {}
 
 local utils = require('win.resizer.utils')
