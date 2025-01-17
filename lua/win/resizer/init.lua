@@ -103,6 +103,30 @@ end
 
 function win_resizer.setup(opts)
     config = vim.tbl_deep_extend('force', default, opts or {})
+    -- make Resize a command receive the same arguments as resize
+    vim.api.nvim_create_user_command('WinResize', function(args)
+        local win = args.fargs[1] and tonumber(args.fargs[1]) or 0
+        local border = args.fargs[2]
+        local delta = args.fargs[3] and tonumber(args.fargs[3]) or 1
+        local respect_ignore_firetypes = args.fargs[4] == nil or args.fargs[4] == 'true'
+        return win_resizer.resize(win, border, delta, respect_ignore_firetypes)
+    end, {
+        nargs = '*',
+        complete = function(_, cmd_line, _)
+            local args = vim.split(cmd_line, '%s*', { trimempty = true })
+            local arg_num = #args - 2
+            if arg_num == 1 then
+                return { '0' }
+            elseif arg_num == 2 then
+                return { 'top', 'bottom', 'left', 'right' }
+            elseif arg_num == 3 then
+                return { '1', '-1', '2', '-2', '3', '-3' }
+            elseif arg_num == 4 then
+                return { 'true', 'false' }
+            end
+        end,
+        desc = 'Resize window with border'
+    })
 end
 
 --- Resize window with border.
