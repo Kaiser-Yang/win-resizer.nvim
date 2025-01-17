@@ -113,10 +113,7 @@ function win_resizer.setup(opts)
     end, {
         nargs = '*',
         complete = function(_, cmd_line, _)
-            local arg_num = 0
-            for _ in string.gmatch(cmd_line, '%s+') do
-                arg_num = arg_num + 1
-            end
+            local arg_num = #vim.split(cmd_line, ' ')
             if arg_num == 1 then
                 return { '0' }
             elseif arg_num == 2 then
