@@ -28,16 +28,16 @@ local resize = require('win.resizer').resize
 local map_set = vim.keymap.set
 local delta = 3
 map_set({ 'n' }, '<up>', function()
-    local _ = resize(0, 'up', delta, true) or
-        resize(0, 'down', -delta, true) or
-        resize(0, 'up', delta, false) or
-        resize(0, 'down', -delta, false)
+    local _ = resize(0, 'top', delta, true) or
+        resize(0, 'bottom', -delta, true) or
+        resize(0, 'top', delta, false) or
+        resize(0, 'bottom', -delta, false)
 end, { desc = 'Smart resize up' })
 map_set({ 'n' }, '<down>', function()
-    local _ = resize(0, 'up', -delta, true) or
-        resize(0, 'down', delta, true) or
-        resize(0, 'up', -delta, false) or
-        resize(0, 'down', delta, false)
+    local _ = resize(0, 'top', -delta, true) or
+        resize(0, 'bottom', delta, true) or
+        resize(0, 'top', -delta, false) or
+        resize(0, 'bottom', delta, false)
 end, { desc = 'Smart resize down' })
 map_set({ 'n' }, '<left>', function()
     local _ = resize(0, 'right', -delta, true) or
