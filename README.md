@@ -26,72 +26,103 @@ You may want to set up those key mappings:
 ```lua
 local resize = require('win.resizer').resize
 local map_set = vim.keymap.set
-local delta = 3
-map_set({ 'n' }, '<up>', function()
-    local _ = resize(0, 'top', delta, true) or
-        resize(0, 'bottom', -delta, true) or
-        resize(0, 'top', delta, false) or
-        resize(0, 'bottom', -delta, false)
-end, { desc = 'Smart resize up' })
-map_set({ 'n' }, '<down>', function()
-    local _ = resize(0, 'top', -delta, true) or
-        resize(0, 'bottom', delta, true) or
-        resize(0, 'top', -delta, false) or
-        resize(0, 'bottom', delta, false)
-end, { desc = 'Smart resize down' })
-map_set({ 'n' }, '<left>', function()
-    local _ = resize(0, 'right', -delta, true) or
-        resize(0, 'left', delta, true) or
-        resize(0, 'right', -delta, false) or
-        resize(0, 'left', delta, false)
-end, { desc = 'Smart resize left' })
-map_set({ 'n' }, '<right>', function()
-    local _ = resize(0, 'right', delta, true) or
-        resize(0, 'left', -delta, true) or
-        resize(0, 'right', delta, false) or
-        resize(0, 'left', -delta, false)
-end, { desc = 'Smart resize right' })
+
+-- You may want change left border first, then set this to 'left'
+local first_left_or_right = 'right'
+-- You may want change bottom border first, then set this to 'bottom'
+local first_top_or_bottom = 'top'
+-- You need not change the following code
+local second_left_or_right = first_left_or_right == 'right' and 'left' or 'right'
+local second_top_or_bottom = first_top_or_bottom == 'bottom' and 'top' or 'bottom'
+
+-- How many lines or columns to resize, make sure it is a positive integer
+local abs_delta = 3
+
+-- Choose your favorite key mappings
+-- Keys in border_to_key will try first_left_or_right and first_top_or_bottom first
+local border_to_key = {
+    top = '<up>',
+    bottom = '<down>',
+    left = '<left>',
+    right = '<right>',
+}
+-- Keys in border_to_reverse_key will try second_left_or_right and second_top_or_bottom first
+local border_to_reverse_key = {
+    top = '<s-up>',
+    bottom = '<s-down>',
+    left = '<s-left>',
+    right = '<s-right>',
+}
+
+-- Smart resize, usually you don't need to change this
+for _, border in pairs({ 'top', 'bottom', 'left', 'right' }) do
+    local delta = (border == first_left_or_right or border == first_top_or_bottom) and abs_delta or -abs_delta
+    local first = (border == first_left_or_right or border == second_left_or_right) and first_left_or_right or
+        first_top_or_bottom
+    local second = first == first_left_or_right and second_left_or_right or second_top_or_bottom
+    local desc = 'Smart resize ' .. first .. ' ' .. border
+    local desc_reverse = 'Smart resize ' .. second .. ' ' .. border
+    map_set({ 'n' }, border_to_key[border], function()
+        local _ = resize(0, first, delta, true) or
+            resize(0, second, -delta, true) or
+            resize(0, first, delta, false) or
+            resize(0, second, -delta, false)
+    end, { desc = desc })
+    map_set({ 'n' }, border_to_reverse_key[border], function()
+        local _ = resize(0, second, -delta, true) or
+            resize(0, first, delta, true) or
+            resize(0, second, -delta, false) or
+            resize(0, first, delta, false)
+    end, { desc = desc_reverse })
+end
 ```
 
 Let me explain what happens for the `<right>` key. First the `<right>` try to make the right border
-of the window increase by `delta`. If it fails (which means there is no window on the right or
+of the window move to right. If it fails (which means there is no window on the right or
 there is a window whose file type is in `ignore_filetypes`), it tries to make the left border of the
-window decrease by `delta`. If it fails again (which means there is no window on the left or there
+window move to right. If it fails again (which means there is no window on the left or there
 is a window whose file type is in `ignore_filetypes`), it tries to make the right border of the
-window increase by `delta` without considering `ignore_filetypes`. If it fails again (which
-means there is no window on the right), it tries to make the left border of the window decrease by
-`delta` without considering `ignore_filetypes`.
+window move to right without considering `ignore_filetypes`. If it fails again (which
+means there is no window on the right), it tries to make the left border of the window move to
+right without considering `ignore_filetypes`. For the `<s-right>` key, it will try with reverse
+order: left border to right, right border to right, left border to right without considering
+`ignore_filetypes`, right border to right without considering `ignore_filetypes`.
 
 Or you may not like these smart resizing, you can use the simple ones:
 
 ```lua
 local resize = require('win.resizer').resize
-local delta = 3
 local map_set = vim.keymap.set
-map_set({ 'n' }, '<up>', function()
-    resize(0, 'top', delta, true)
-end, { desc = 'Increase top border' })
-map_set({ 'n' }, '<s-up>', function()
-    resize(0, 'top', -delta, true)
-end, { desc = 'Decrease top border' })
-map_set({ 'n' }, '<right>', function()
-    resize(0, 'right', delta, true)
-end, { desc = 'Increase right border' })
-map_set({ 'n' }, '<s-right>', function()
-    resize(0, 'right', -delta, true)
-end, { desc = 'Decrease right border' })
-map_set({ 'n' }, '<down>', function()
-    resize(0, 'bottom', delta, true)
-end, { desc = 'Increase bottom border' })
-map_set({ 'n' }, '<s-down>', function()
-    resize(0, 'bottom', -delta, true)
-end, { desc = 'Decrease bottom border' })
-map_set({ 'n' }, '<left>', function()
-    resize(0, 'left', delta, true)
-end, { desc = 'Increase left border' })
-map_set({ 'n' }, '<s-left>', function()
-    resize(0, 'left', -delta, true)
-end, { desc = 'Decrease left border' })
+
+-- How many lines or columns to resize, make sure it is a positive integer
+local abs_delta = 3
+
+-- Choose your favorite key mappings
+-- Keys in border_to_key will try to increase the border
+local border_to_key = {
+    top = '<up>',
+    bottom = '<down>',
+    left = '<left>',
+    right = '<right>',
+}
+-- Keys in border_to_reverse_key will try to decrease the border
+local border_to_reverse_key = {
+    top = '<s-up>',
+    bottom = '<s-down>',
+    left = '<s-left>',
+    right = '<s-right>',
+}
+for _, border in pairs({ 'top', 'bottom', 'left', 'right' }) do
+    local delta = abs_delta
+    local desc = 'Increase ' .. border .. ' border'
+    local desc_reverse = 'Decrease ' .. border .. ' border'
+    map_set({ 'n' }, border_to_key[border], function()
+        resize(0, border, delta, true)
+    end, { desc = desc })
+    map_set({ 'n' }, border_to_reverse_key[border], function()
+        resize(0, border, -delta, true)
+    end, { desc = desc_reverse })
+end
 ```
 
 ## Command
