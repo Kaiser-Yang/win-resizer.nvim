@@ -39,14 +39,14 @@ local second_top_or_bottom = first_top_or_bottom == 'bottom' and 'top' or 'botto
 local abs_delta = 3
 
 -- Choose your favorite key mappings
--- Keys in border_to_key will try first_left_or_right and first_top_or_bottom first
+-- Keys in border_to_key will try first_left_or_right or first_top_or_bottom first
 local border_to_key = {
     top = '<up>',
     bottom = '<down>',
     left = '<left>',
     right = '<right>',
 }
--- Keys in border_to_reverse_key will try second_left_or_right and second_top_or_bottom first
+-- Keys in border_to_reverse_key will try second_left_or_right or second_top_or_bottom first
 local border_to_reverse_key = {
     top = '<s-up>',
     bottom = '<s-down>',
@@ -56,9 +56,12 @@ local border_to_reverse_key = {
 
 -- Smart resize, usually you don't need to change this
 for _, border in pairs({ 'top', 'bottom', 'left', 'right' }) do
-    local delta = (border == first_left_or_right or border == first_top_or_bottom) and abs_delta or -abs_delta
-    local first = (border == first_left_or_right or border == second_left_or_right) and first_left_or_right or
-        first_top_or_bottom
+    local delta = (border == first_left_or_right or border == first_top_or_bottom)
+        and abs_delta
+        or -abs_delta
+    local first = (border == first_left_or_right or border == second_left_or_right)
+        and first_left_or_right
+        or first_top_or_bottom
     local second = first == first_left_or_right and second_left_or_right or second_top_or_bottom
     local desc = 'Smart resize ' .. first .. ' ' .. border
     local desc_reverse = 'Smart resize ' .. second .. ' ' .. border
