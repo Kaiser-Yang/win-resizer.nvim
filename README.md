@@ -120,10 +120,10 @@ for _, border in pairs({ 'top', 'bottom', 'left', 'right' }) do
     local desc = 'Increase ' .. border .. ' border'
     local desc_reverse = 'Decrease ' .. border .. ' border'
     map_set({ 'n' }, border_to_key[border], function()
-        resize(0, border, delta, true)
+        resize(0, border, delta, false)
     end, { desc = desc })
     map_set({ 'n' }, border_to_reverse_key[border], function()
-        resize(0, border, -delta, true)
+        resize(0, border, -delta, false)
     end, { desc = desc_reverse })
 end
 ```
