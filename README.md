@@ -102,9 +102,9 @@ Examples:
 
 ```vim
 " Increase the top border of the current window by 1
-:WinResizer top
+:WinResize top
 " Decrease the top border of the current window by 1
-:WinResizer top -1
+:WinResize top -1
 " Increase the right border of the current window by 1 without considering ignore_filetypes
-:WinResizer right 1 false
+:WinResize right 1 false
 ```
